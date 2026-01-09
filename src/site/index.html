@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disaster Relief Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <div class="container">
+        <!-- Auth View -->
+        <div id="authView">
+            <div class="auth-container">
+                <h2 id="authTitle">🆘 Disaster Relief</h2>
+                <div id="authMessage"></div>
+                <form id="authForm">
+                    <div class="form-group hidden" id="nameGroup">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" placeholder="Enter your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group hidden" id="phoneGroup">
+                        <label for="phone">Phone</label>
+                        <input type="tel" id="phone" placeholder="Enter your phone number">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit" id="authSubmit">Sign In</button>
+                </form>
+                <div class="auth-toggle">
+                    <span id="toggleText">Don't have an account?</span>
+                    <a id="toggleLink">Sign Up</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main App View -->
+        <div id="appView" class="hidden">
+            <div class="header">
+                <h1>🆘 Disaster Relief Platform</h1>
+                <div class="user-info">
+                    <span id="userName"></span>
+                    <button onclick="logout()">Logout</button>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <a href="#requests" class="tab active" onclick="switchTab('requests')">Help Requests</a>
+                
+                <a href="#resources" class="tab" onclick="switchTab('resources')">Resources</a>
+                <a href="#newRequest" class="tab" onclick="switchTab('newRequest')">Post Request</a>
+                <a href="#newResource" class="tab" onclick="switchTab('newResource')">Add Resource</a>
+                
+                
+            </div>
+
+            <div class="content-area">
+                <!-- Requests Tab -->
+                <div id="requestsTab">
+                    <h2>Active Help Requests</h2>
+                    <div class="filter-bar">
+                        <select id="statusFilter" onchange="loadRequests()">
+                            <option value="">All Status</option>
+                            <option value="open">Open</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="closed">Closed</option>
+                        </select>
+                        <select id="helpTypeFilter" onchange="loadRequests()">
+                            <option value="">All Types</option>
+                            <option value="Medical 🚑">Medical 🚑</option>
+                            <option value="Food 🍞">Food 🍞</option>
+                            <option value="Shelter 🏠">Shelter 🏠</option>
+                            <option value="Transportation 🚗">Transportation 🚗</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div id="requestsList"></div>
+                </div>
+
+                <!-- My Volunteers Tab -->
+                <div id="myVolunteersTab" class="hidden">
+                    <h2>My Volunteer Commitments</h2>
+                    <div id="myVolunteersList"></div>
+                </div>
+
+                <!-- Resources Tab -->
+                <div id="resourcesTab" class="hidden">
+                    <h2>Available Resources</h2>
+                    <div id="resourcesList"></div>
+                </div>
+
+                <!-- New Request Tab -->
+                <div id="newRequestTab" class="hidden">
+                    <h2>Post a Help Request</h2>
+                    <div id="requestMessage"></div>
+                    <form id="requestForm">
+                        <div class="form-group">
+                            <label for="reqName">Your Name</label>
+                            <input type="text" id="reqName" required>
+                        </div>
+                        <div class="form-group">
+    <label for="reqAddress">Address</label>
+    <input type="text" id="reqAddress" 
+           placeholder="e.g., Connaught Place, New Delhi, India" 
+           required>
+    <small style="color:#666;font-size:12px;">Please enter a real address (city, state, country) for accurate map placement</small>
+</div>
+                        <div class="form-group">
+                            <label for="reqPhone">Phone</label>
+                            <input type="tel" id="reqPhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reqEmail">Email</label>
+                            <input type="email" id="reqEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reqHelpType">Type of Help Needed</label>
+                            <select id="reqHelpType" required>
+                                <option value="">Select type</option>
+                                <option value="Medical 🚑">Medical 🚑</option>
+                                <option value="Food 🍞">Food 🍞</option>
+                                <option value="Shelter 🏠">Shelter 🏠</option>
+                                <option value="Transportation 🚗">Transportation 🚗</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reqUrgency">Urgency Level</label>
+                            <select id="reqUrgency" required>
+                                <option value="">Select urgency</option>
+                                <option value="Critical">Critical</option>
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reqDescription">Description</label>
+                            <textarea id="reqDescription" required></textarea>
+                        </div>
+                        <button type="submit">Submit Request</button>
+                    </form>
+                </div>
+
+                <!-- New Resource Tab -->
+                <div id="newResourceTab" class="hidden">
+                    <h2>Add a Resource</h2>
+                    <div id="resourceMessage"></div>
+                    <form id="resourceForm">
+                        <div class="form-group">
+                            <label for="resType">Resource Type</label>
+                            <input type="text" id="resType" placeholder="e.g., Water 💧 , Food 🍞, Medicine 💊 " required>
+                        </div>
+                        <div class="form-group">
+                            <label for="resQuantity">Quantity</label>
+                            <input type="number" id="resQuantity" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="resLocation">Location</label>
+                            <input type="text" id="resLocation" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="resDescription">Description (Optional)</label>
+                            <textarea id="resDescription"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="resExpiration">Expiration Date (Optional)</label>
+                            <input type="date" id="resExpiration">
+                        </div>
+                        <button type="submit">Add Resource</button>
+                    </form>
+                </div>
+                <!-- MAP TAB (persistent, do not destroy) -->
+<div id="mapTab" class="hidden">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+    <h2>🗺️ Map View</h2>
+    <button onclick="refreshMapMarkers()" style="padding: 8px 16px;">
+      🔄 Refresh Markers
+    </button>
+  </div>
+  <div class="request-card" style="margin-bottom:15px;">
+  <div class="card-header">
+    <div class="card-title">🧭 Map Filters</div>
+  </div>
+
+  <div style="display:flex; gap:20px; flex-wrap:wrap; margin-top:10px;">
+    <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+      <input
+        type="checkbox"
+        checked
+        onchange="toggleRequests(this.checked)"
+      />
+      <span>Help Requests</span>
+    </label>
+
+    <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+      <input
+        type="checkbox"
+        checked
+        onchange="toggleResources(this.checked)"
+      />
+      <span>Resources</span>
+    </label>
+  </div>
+</div>
+
+  <div id="mapContainer"></div>
+</div>
+        <!-- GEMINI TAB -->
+        <div id="geminiTab" class="hidden">
+  <h2>🤖 Gemini AI Assistant</h2>
+
+  <div id="geminiChat" class="gemini-chat"></div>
+
+  <textarea
+    id="geminiPrompt"
+    placeholder="Type your message here..."
+    style="width:100%;height:60px;">
+  </textarea>
+
+  <button onclick="sendGeminiPrompt()" style="margin-top:10px;">
+    Send
+  </button>
+</div>
+<!-- News Tab -->
+<div id="newsTab" class="hidden">
+    <h2>📰 Disaster & Relief News</h2>
+
+    <div style="margin-bottom:10px;color:#666;">
+        Live updates from trusted news sources
+    </div>
+
+    <div id="newsList">
+        <p style="text-align:center;color:#666;">Loading news…</p>
+    </div>
+</div>
+            </div>  
+        </div>
+        
+
+</body>
+</html>
