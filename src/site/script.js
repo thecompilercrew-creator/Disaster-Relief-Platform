@@ -43,7 +43,7 @@
             document.body.style.opacity = 1;
         };
 
-        const API_URL = 'https://deploy-test-b7m6.onrender.com';
+        const API_URL = 'you-backend-url.your-domain';
         let token = null;
         let currentUser = null;
         let isSignUp = false;
